@@ -27,6 +27,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.annotation.Repeat;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
@@ -79,18 +80,21 @@ public class QuizServiceTests {
         testEntityManager.clear();
     }
 
+
+    @Sql(scripts = {"/scripts/clear_db.sql", "/scripts/full_test_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void generateNewQuiz() {
-        generateAndSaveQuestionsWithAnswers(100, testEntityManager, 5L);
         Quiz quiz = quizService.getNewQuiz();
         assertThat(quiz.getQuestions().size()).isEqualTo(10);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test(expected = NotEnoughQuestionsException.class)
     public void getNewQuizWhenNotEnoughQuestions() {
         Quiz notEnoughQuestionsQuiz = quizService.getNewQuiz();
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void addQuestionsToDatabase() {
         List<AddQuestionDTO> userQuestions = generateUserQuestions(20, 5L);
@@ -130,6 +134,7 @@ public class QuizServiceTests {
     }
 
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void validateResultsIfAllMultipleQuestions() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -141,6 +146,7 @@ public class QuizServiceTests {
         assertThat(validatedResults.getPoints()).isEqualTo(200L);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void validateResultsIfAllSingleAnswerQuestions() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -153,6 +159,7 @@ public class QuizServiceTests {
         assertThat(validatedResults.getPoints()).isEqualTo(0L);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void checkLogs() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -176,6 +183,7 @@ public class QuizServiceTests {
         }
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void validateResultsIfHalfSingleAndHalfMultipleAnswerQuestions() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -189,6 +197,7 @@ public class QuizServiceTests {
         assertThat(validatedResults.getPoints()).isEqualTo(100L);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void validateResultsForSingleAnswerQuestionsWithOneTrueValue() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -262,6 +271,7 @@ public class QuizServiceTests {
         assertThat(quizDTO.getQuestions().size() > 0).isEqualTo(true);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void calculateMaxPoints() {
         generateAndSaveQuestionsWithAnswers(100, testEntityManager, 5L);
@@ -277,6 +287,7 @@ public class QuizServiceTests {
         assertThat(pointSum).isEqualTo(quiz.getMaxPoints());
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void calculateMaxPointsWithNegativePoints() {
         generateAndSaveQuestionsWithAnswers(100, testEntityManager, -2L);
@@ -284,6 +295,7 @@ public class QuizServiceTests {
         assertThat(quiz.getMaxPoints()).isEqualTo(0L);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void calculateMaxPointsWithPositiveAndNegativePoints() {
         generateAndSaveQuestionsWithAnswers(5, testEntityManager, -2L);
@@ -292,10 +304,9 @@ public class QuizServiceTests {
         assertThat(quiz.getMaxPoints()).isEqualTo(40L);
     }
 
-    @Repeat(value = 10) // Randomly chosen questions, just to make sure that no duplicates are present
+    @Sql(scripts = {"/scripts/clear_db.sql", "/scripts/full_test_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void quizQuestionContainNoDuplicates() {
-        generateAndSaveQuestionsWithAnswers(15, testEntityManager, 5L);
         Quiz quiz = quizService.getNewQuiz();
         assertNoDuplicates(quiz.getQuestions());
     }

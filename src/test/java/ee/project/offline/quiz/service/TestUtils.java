@@ -3,6 +3,7 @@ package ee.project.offline.quiz.service;
 import ee.project.offline.quiz.domain.Answer;
 import ee.project.offline.quiz.domain.Question;
 import ee.project.offline.quiz.domain.dto.add.AddQuestionDTO;
+import ee.project.offline.quiz.domain.log.UserQuestionLog;
 import ee.project.offline.quiz.mapper.AnswerMapper;
 import ee.project.offline.quiz.mapper.QuestionMapper;
 import net.bytebuddy.utility.RandomString;
