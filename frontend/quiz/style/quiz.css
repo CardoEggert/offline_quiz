@@ -119,3 +119,10 @@ ul {
     display: flex;
     justify-content: center;
 }
+
+.text-to-middle {
+    justify-content: center;
+    display: flex;
+}
+
+html,body { height:100%; }

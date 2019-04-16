@@ -1,6 +1,6 @@
 var app = angular.module('QuizApp', []);
 
-app.controller('quizController', ['$scope', '$http', function($scope, $http) {
+app.controller('quizController', ['$scope', '$http', '$window', function($scope, $http, $window) {
     $scope.startQuiz = false;
     $scope.quizInProgress = false;
     $scope.name = '';
@@ -187,5 +187,5 @@ app.controller('quizController', ['$scope', '$http', function($scope, $http) {
         $scope.quiz = undefined;
     };
     
-    
+    $scope.hgt = $window.innerHeight / 2;
 }]);
