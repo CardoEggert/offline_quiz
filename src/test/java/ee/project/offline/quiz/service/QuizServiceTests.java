@@ -81,7 +81,7 @@ public class QuizServiceTests {
 
     @Test
     public void generateNewQuiz() {
-        generateAndSaveQuestionsWithAnswers(100, testEntityManager);
+        generateAndSaveQuestionsWithAnswers(100, testEntityManager, 5L);
         Quiz quiz = quizService.getNewQuiz();
         assertThat(quiz.getQuestions().size()).isEqualTo(10);
     }
@@ -93,7 +93,7 @@ public class QuizServiceTests {
 
     @Test
     public void addQuestionsToDatabase() {
-        List<AddQuestionDTO> userQuestions = generateUserQuestions(20);
+        List<AddQuestionDTO> userQuestions = generateUserQuestions(20, 5L);
 
         List<Question> extractedQuestions = extractQuestionsFromUserQuestions(userQuestions);
         List<Answer> extractedAnswers = extractAnswersFromUserQuestions(userQuestions);
@@ -108,7 +108,7 @@ public class QuizServiceTests {
 
     @Test(expected = InvalidQuestionException.class)
     public void addMultipleChoiceQuestionWithNoRightAnswersToDatabase() {
-        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion();
+        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion(5L);
         userQuestions.setMultipleChoice(true);
         setAllAnswersToFalse(userQuestions.getAnswers());
 
@@ -231,14 +231,14 @@ public class QuizServiceTests {
     }
 
     private QuizResults createQuizResults() {
-        generateAndSaveQuestionsWithAnswers(20, testEntityManager);
+        generateAndSaveQuestionsWithAnswers(20, testEntityManager, 5L);
         Quiz newQuiz = quizService.getNewQuiz();
         return QuizMapper.fromDtoToQuizResult(quizService.convertQuiz(newQuiz));
     }
 
     @Test(expected = InvalidQuestionException.class)
     public void addSingleChoiceQuestionWithNoRightAnswersToDatabase() {
-        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion();
+        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion(5L);
         userQuestions.setMultipleChoice(false);
         setAllAnswersToFalse(userQuestions.getAnswers());
 
@@ -247,7 +247,7 @@ public class QuizServiceTests {
 
     @Test(expected = InvalidQuestionException.class)
     public void addQuestionWithNoAnswer() {
-        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion();
+        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion(5L);
         userQuestions.setMultipleChoice(false);
         userQuestions.setAnswers(new ArrayList<>());
 
@@ -256,7 +256,7 @@ public class QuizServiceTests {
 
     @Test
     public void addAnswersToQuestion() {
-        generateAndSaveQuestionsWithAnswers(100, testEntityManager);
+        generateAndSaveQuestionsWithAnswers(100, testEntityManager, 5L);
         Quiz quiz = quizService.getNewQuiz();
         QuizDTO quizDTO = quizService.convertQuiz(quiz);
         assertThat(quizDTO.getQuestions().size() > 0).isEqualTo(true);
@@ -264,7 +264,7 @@ public class QuizServiceTests {
 
     @Test
     public void calculateMaxPoints() {
-        generateAndSaveQuestionsWithAnswers(100, testEntityManager);
+        generateAndSaveQuestionsWithAnswers(100, testEntityManager, 5L);
         Quiz quiz = quizService.getNewQuiz();
         List<Long> questionIds = quiz.getQuestions().stream().map(Question::getId).collect(Collectors.toList());
         long pointSum = 0;
@@ -277,10 +277,25 @@ public class QuizServiceTests {
         assertThat(pointSum).isEqualTo(quiz.getMaxPoints());
     }
 
-    @Repeat(value = 10)
+    @Test
+    public void calculateMaxPointsWithNegativePoints() {
+        generateAndSaveQuestionsWithAnswers(100, testEntityManager, -2L);
+        Quiz quiz = quizService.getNewQuiz();
+        assertThat(quiz.getMaxPoints()).isEqualTo(0L);
+    }
+
+    @Test
+    public void calculateMaxPointsWithPositiveAndNegativePoints() {
+        generateAndSaveQuestionsWithAnswers(5, testEntityManager, -2L);
+        generateAndSaveQuestionsWithAnswers(5, testEntityManager, 2L);
+        Quiz quiz = quizService.getNewQuiz();
+        assertThat(quiz.getMaxPoints()).isEqualTo(40L);
+    }
+
+    @Repeat(value = 10) // Randomly chosen questions, just to make sure that no duplicates are present
     @Test
     public void quizQuestionContainNoDuplicates() {
-        generateAndSaveQuestionsWithAnswers(15, testEntityManager);
+        generateAndSaveQuestionsWithAnswers(15, testEntityManager, 5L);
         Quiz quiz = quizService.getNewQuiz();
         assertNoDuplicates(quiz.getQuestions());
     }

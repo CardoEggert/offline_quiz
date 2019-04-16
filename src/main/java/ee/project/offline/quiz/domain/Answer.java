@@ -32,10 +32,10 @@ public class Answer {
         this.description = description;
     }
 
-    public Answer(String description, boolean isCorrectAnswer, int points) {
+    public Answer(String description, boolean isCorrectAnswer, long points) {
         this.description = description;
         this.isCorrectAnswer = isCorrectAnswer;
-        this.points = (long) points;
+        this.points = points;
     }
 
     public Long getId() {

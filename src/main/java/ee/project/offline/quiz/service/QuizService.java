@@ -70,11 +70,11 @@ public class QuizService {
 
     private Long calculateMaxPoints(Quiz quizWithQuestions) {
         if (!CollectionUtils.isEmpty(quizWithQuestions.getQuestions())) {
-            Long maxPoints = 0L;
+            long maxPoints = 0L;
             for (Question question : quizWithQuestions.getQuestions()) {
                 List<Answer> answersFromDb = answerRepository.findAllByQuestionId(question.getId());
                 for (Answer answer : answersFromDb) {
-                    maxPoints += answer.getPoints();
+                    maxPoints += Math.max(0L, answer.getPoints());
                 }
             }
             return maxPoints;
@@ -200,9 +200,7 @@ public class QuizService {
         for(QuizAnswer checkedAnswer : checkedAnswers) {
             if (checkedAnswer.getAnswered()) {
                 Answer dbAnswer = getAnswerFromDb(answerMap, checkedAnswer.getAnswer());
-                if (dbAnswer != null) {
-                    result += dbAnswer.getPoints();
-                }
+                if (dbAnswer != null) result += dbAnswer.getPoints();
             }
         }
         return result;

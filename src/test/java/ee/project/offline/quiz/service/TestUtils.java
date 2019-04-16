@@ -18,20 +18,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TestUtils {
 
-    public static List<Answer> generateQuestionsWithAnswers(int amountOfQuestionsToGenerate) {
+    public static List<Answer> generateQuestionsWithAnswers(int amountOfQuestionsToGenerate, Long pointsPerAnswer) {
         List<Answer> answers = new ArrayList<>(amountOfQuestionsToGenerate);
         for (int indx = 0; indx < amountOfQuestionsToGenerate; indx++) {
             Question generatedQuestion = new Question(RandomString.make(10), false);
-            answers.addAll(generateAnswers(4, generatedQuestion));
+            answers.addAll(generateAnswers(4, generatedQuestion, pointsPerAnswer));
         }
         return answers;
     }
 
-    private static List<Answer> generateAnswers(int amountOfAnswersoGenerate, Question generatedQuestion) {
+    private static List<Answer> generateAnswers(int amountOfAnswersoGenerate, Question generatedQuestion, Long pointsPerAnswer) {
         List<Answer> answers = new ArrayList<>(amountOfAnswersoGenerate);
         boolean correctForOnce = true;
         for (int indx = 0; indx < amountOfAnswersoGenerate; indx++) {
-            Answer generatedAnswer  = new Answer(RandomString.make(10),  correctForOnce, new Random().nextInt(10));
+            Answer generatedAnswer  = new Answer(RandomString.make(10),  correctForOnce, pointsPerAnswer);
             correctForOnce = false;
             generatedAnswer.setQuestion(generatedQuestion);
             answers.add(generatedAnswer);
@@ -39,9 +39,11 @@ public class TestUtils {
         return answers;
     }
 
-    public static void generateAndSaveQuestionsWithAnswers(int amountOfQuestionsToGenerate, TestEntityManager testEntityManager) {
+    public static void generateAndSaveQuestionsWithAnswers(int amountOfQuestionsToGenerate,
+                                                           TestEntityManager testEntityManager,
+                                                           Long pointsPerAnswer) {
         Stack<Question> questionStack = new Stack<>();
-        List<Answer> generatedAnswersWithQuestions = generateQuestionsWithAnswers(amountOfQuestionsToGenerate);
+        List<Answer> generatedAnswersWithQuestions = generateQuestionsWithAnswers(amountOfQuestionsToGenerate, pointsPerAnswer);
         for (Answer generatedAnswer : generatedAnswersWithQuestions) {
             if (!questionStack.contains(generatedAnswer.getQuestion())) {
                 Question savedQuestion = testEntityManager.persistAndFlush(generatedAnswer.getQuestion());
@@ -51,11 +53,11 @@ public class TestUtils {
         }
     }
 
-    public static List<AddQuestionDTO> generateUserQuestions(int amountOfQuestions) {
+    public static List<AddQuestionDTO> generateUserQuestions(int amountOfQuestions, long pointsPerAnswer) {
         List<AddQuestionDTO> questionList = new ArrayList<>(amountOfQuestions);
         for (int indx = 0; indx < amountOfQuestions; indx++) {
-            AddQuestionDTO generatedQuestion = new AddQuestionDTO();
-            List<Answer> generatedAnswers = generateAnswers(4, new Question());
+            AddQuestionDTO generatedQuestion;
+            List<Answer> generatedAnswers = generateAnswers(4, new Question(), pointsPerAnswer);
             generatedQuestion = QuestionMapper.fromDbToAddDto(new Question(RandomString.make(10), false),
                     generatedAnswers.stream().map(AnswerMapper::fromDbToAddDto).collect(Collectors.toList()));
             questionList.add(generatedQuestion);
@@ -86,9 +88,9 @@ public class TestUtils {
         return questionsFromDTO.stream().map(QuestionMapper::fromAddDtoToDb).collect(Collectors.toList());
     }
 
-    public static AddQuestionDTO generateSingleUserQuestion() {
+    public static AddQuestionDTO generateSingleUserQuestion(long pointsPerAnswer) {
         AddQuestionDTO generatedQuestion;
-        List<Answer> generatedAnswers = generateAnswers(4, new Question());
+        List<Answer> generatedAnswers = generateAnswers(4, new Question(), pointsPerAnswer);
         generatedQuestion = QuestionMapper.fromDbToAddDto(new Question(RandomString.make(10),  false),
                 generatedAnswers.stream().map(AnswerMapper::fromDbToAddDto).collect(Collectors.toList()));
         return generatedQuestion;

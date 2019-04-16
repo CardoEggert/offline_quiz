@@ -35,7 +35,7 @@ public class QuestionRepositoryTest {
 
     @Test
     public void findAllQuestions() {
-        List<Answer> generatedQuestionsWithAnswers = TestUtils.generateQuestionsWithAnswers(15);
+        List<Answer> generatedQuestionsWithAnswers = TestUtils.generateQuestionsWithAnswers(15, 5L);
 
         Stack<Question> savedQuestions = saveQuestionsAndAnswers(generatedQuestionsWithAnswers);
         List<Question> allQuestions = this.questionRepository.findAll();
