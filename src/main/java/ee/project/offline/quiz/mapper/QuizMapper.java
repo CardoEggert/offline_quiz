@@ -1,8 +1,8 @@
 package ee.project.offline.quiz.mapper;
 
 import ee.project.offline.quiz.domain.Quiz;
-import ee.project.offline.quiz.domain.dto.QuestionDTO;
-import ee.project.offline.quiz.domain.dto.QuizDTO;
+import ee.project.offline.quiz.domain.dto.quiz.QuestionDTO;
+import ee.project.offline.quiz.domain.dto.quiz.QuizDTO;
 import ee.project.offline.quiz.domain.dto.results.QuizResults;
 
 import java.util.List;

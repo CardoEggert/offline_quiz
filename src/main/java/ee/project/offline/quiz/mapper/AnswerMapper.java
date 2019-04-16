@@ -3,7 +3,7 @@ package ee.project.offline.quiz.mapper;
 import ee.project.offline.quiz.domain.Answer;
 import ee.project.offline.quiz.domain.Question;
 import ee.project.offline.quiz.domain.dto.add.AddAnswerDTO;
-import ee.project.offline.quiz.domain.dto.AnswerDTO;
+import ee.project.offline.quiz.domain.dto.quiz.AnswerDTO;
 import ee.project.offline.quiz.domain.dto.results.QuizAnswer;
 
 import java.util.ArrayList;

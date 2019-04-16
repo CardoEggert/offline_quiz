@@ -1,4 +1,4 @@
-package ee.project.offline.quiz.service.storage;
+package ee.project.offline.quiz.service.storage.exceptions;
 
 public class StorageException extends RuntimeException {
 

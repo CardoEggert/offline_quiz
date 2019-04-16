@@ -1,8 +1,8 @@
 package ee.project.offline.quiz.mapper;
 
 import ee.project.offline.quiz.domain.Question;
-import ee.project.offline.quiz.domain.dto.AnswerDTO;
-import ee.project.offline.quiz.domain.dto.QuestionDTO;
+import ee.project.offline.quiz.domain.dto.quiz.AnswerDTO;
+import ee.project.offline.quiz.domain.dto.quiz.QuestionDTO;
 import ee.project.offline.quiz.domain.dto.add.AddAnswerDTO;
 import ee.project.offline.quiz.domain.dto.add.AddQuestionDTO;
 import ee.project.offline.quiz.domain.dto.results.QuestionResultWrapper;

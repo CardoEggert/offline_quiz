@@ -1,4 +1,4 @@
-package ee.project.offline.quiz.domain.dto;
+package ee.project.offline.quiz.domain.dto.quiz;
 
 import java.util.List;
 
