@@ -126,3 +126,11 @@ ul {
 }
 
 html,body { height:100%; }
+
+.accordion-body-fill {
+    max-height: 200px;
+    overflow-x: auto;
+}
+.form-min-width{
+    min-width: 400px !important;
+}

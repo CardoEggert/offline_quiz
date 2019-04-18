@@ -49,10 +49,41 @@
             </div>
             <div class="col-sm-12">
                 <button ng-disabled="!testStartable()" id="quizButton" type="button" class="btn btn-primary btn-lg btn-block" ng-click="startQuizApp(name, email)">Alusta testi</button>
+                <div class="padding-top-15" ng-show="!startQuiz && !quizInProgress && statisticsToShow()" ng-init="loadStatistics()">
+                    <div class="accordion" id="statisticsAccordion">
+                        <div class="card">
+                            <div class="card-header" id="statisticsHeader">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Näita tulemusi
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseOne" class="collapse" aria-labelledby="statisticsHeader" data-parent="#statisticsAccordion">
+                                <div class="card-body accordion-body-fill">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Nimi</th>
+                                                <th scope="col">Tulemus</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="statistic in statistics.statisticItems">
+                                                <th scope="row">{{$index + 1}}</th>
+                                                <th>{{statistic.name}}</th>
+                                                <th>{{statistic.percentageResult * 100 | number:2 }}%</th>
+                                            </tr>
+                                        </tbody>
+                                    </table>      
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
-    
     <div ng-show="quizInProgress && quiz == null" class="center-text">
         Laen testi...
     </div>

@@ -13,6 +13,7 @@ import ee.project.offline.quiz.domain.dto.results.QuizAnswer;
 import ee.project.offline.quiz.domain.dto.results.QuizResults;
 import ee.project.offline.quiz.domain.log.UserAnswerLog;
 import ee.project.offline.quiz.domain.log.UserQuestionLog;
+import ee.project.offline.quiz.domain.statistics.StatisticsList;
 import ee.project.offline.quiz.mapper.AnswerMapper;
 import ee.project.offline.quiz.mapper.QuestionMapper;
 import ee.project.offline.quiz.mapper.QuizMapper;
