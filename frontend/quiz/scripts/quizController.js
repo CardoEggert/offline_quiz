@@ -1,6 +1,6 @@
 var app = angular.module('QuizApp', []);
 
-app.controller('quizController', ['$scope', '$http', function($scope, $http) {
+app.controller('quizController', ['$scope', '$http', '$window', '$interval', function($scope, $http, $window, $interval) {
     $scope.startQuiz = false;
     $scope.quizInProgress = false;
     $scope.name = '';
@@ -185,7 +185,34 @@ app.controller('quizController', ['$scope', '$http', function($scope, $http) {
         $scope.quizFinished = false;
         $scope.quizResults = undefined;
         $scope.quiz = undefined;
+        $scope.loadStatistics();
     };
+    
+    $scope.hgt = $window.innerHeight / 2;
+    
+    
+    $scope.loadStatistics = function() {
+        $http.get("http://localhost:8080/statistics").then(function(response) {
+                $scope.statistics = response.data;
+                console.log("success");
+            }, function(error) {
+                console.log(error);
+                console.log("failed");
+            });
+    }
+    
+    $scope.statisticsToShow = function () {
+        if ($scope.statistics && $scope.statistics.statisticItems.length > 0) {
+            return true;
+        }
+        return false;
+    }
+    
+    $interval(function() {
+        if (!$scope.startQuiz && !$scope.quizInProgress) {
+            $scope.loadStatistics();
+        }
+    }, 60000);
     
     
 }]);

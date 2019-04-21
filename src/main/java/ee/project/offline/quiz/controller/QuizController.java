@@ -1,12 +1,10 @@
 package ee.project.offline.quiz.controller;
 
-import ee.project.offline.quiz.domain.Answer;
 import ee.project.offline.quiz.domain.Quiz;
-import ee.project.offline.quiz.domain.dto.QuestionDTO;
-import ee.project.offline.quiz.domain.dto.QuizDTO;
+import ee.project.offline.quiz.domain.dto.quiz.QuizDTO;
 import ee.project.offline.quiz.domain.dto.add.AddQuestionDTO;
 import ee.project.offline.quiz.domain.dto.results.QuizResults;
-import ee.project.offline.quiz.service.NotEnoughQuestionsException;
+import ee.project.offline.quiz.service.exceptions.NotEnoughQuestionsException;
 import ee.project.offline.quiz.service.QuizService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

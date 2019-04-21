@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.stream.Stream;
 
+import ee.project.offline.quiz.service.storage.exceptions.StorageException;
+import ee.project.offline.quiz.service.storage.exceptions.StorageFileNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

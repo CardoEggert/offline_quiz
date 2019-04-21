@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
@@ -33,9 +34,10 @@ public class QuestionRepositoryTest {
     @Autowired
     private TestEntityManager testEntityManager;
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void findAllQuestions() {
-        List<Answer> generatedQuestionsWithAnswers = TestUtils.generateQuestionsWithAnswers(15);
+        List<Answer> generatedQuestionsWithAnswers = TestUtils.generateQuestionsWithAnswers(15, 5L);
 
         Stack<Question> savedQuestions = saveQuestionsAndAnswers(generatedQuestionsWithAnswers);
         List<Question> allQuestions = this.questionRepository.findAll();
