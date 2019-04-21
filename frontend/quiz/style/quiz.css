@@ -131,6 +131,6 @@ html,body { height:100%; }
     max-height: 200px;
     overflow-x: auto;
 }
-.form-min-width{
-    min-width: 400px !important;
+.form-min-width {
+    min-width: 350px;
 }

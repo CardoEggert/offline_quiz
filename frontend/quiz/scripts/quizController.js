@@ -1,6 +1,6 @@
 var app = angular.module('QuizApp', []);
 
-app.controller('quizController', ['$scope', '$http', '$window', function($scope, $http, $window) {
+app.controller('quizController', ['$scope', '$http', '$window', '$interval', function($scope, $http, $window, $interval) {
     $scope.startQuiz = false;
     $scope.quizInProgress = false;
     $scope.name = '';
@@ -185,6 +185,7 @@ app.controller('quizController', ['$scope', '$http', '$window', function($scope,
         $scope.quizFinished = false;
         $scope.quizResults = undefined;
         $scope.quiz = undefined;
+        $scope.loadStatistics();
     };
     
     $scope.hgt = $window.innerHeight / 2;
@@ -206,4 +207,12 @@ app.controller('quizController', ['$scope', '$http', '$window', function($scope,
         }
         return false;
     }
+    
+    $interval(function() {
+        if (!$scope.startQuiz && !$scope.quizInProgress) {
+            $scope.loadStatistics();
+        }
+    }, 60000);
+    
+    
 }]);
