@@ -185,7 +185,7 @@ public class QuizService {
             result += addPointsAccordingToCheckedAnswers(checkedAnswers, answerMap);
         }
         checkedResult.setQuestions(checkedQuestions);
-        return result;
+        return Math.max(0L, result);
     }
 
     private QuizAnswer getCorrectAnswer(List<QuizAnswer> answers, Map<Long, Answer> answerMap) {
@@ -199,9 +199,14 @@ public class QuizService {
     private long addPointsAccordingToCheckedAnswers(List<QuizAnswer> checkedAnswers, Map<Long, Answer> answerMap) {
         long result = 0L;
         for(QuizAnswer checkedAnswer : checkedAnswers) {
-            if (checkedAnswer.getAnswered()) {
-                Answer dbAnswer = getAnswerFromDb(answerMap, checkedAnswer.getAnswer());
-                if (dbAnswer != null) result += dbAnswer.getPoints();
+            Answer dbAnswer = getAnswerFromDb(answerMap, checkedAnswer.getAnswer());
+            if (dbAnswer != null) {
+                if (checkedAnswer.getAnswered()) {
+                    result += Math.max(0, dbAnswer.getPoints());
+                }
+                if (!checkedAnswer.getAnswered() && dbAnswer.getPoints() < 0L) {
+                    result += dbAnswer.getPoints();
+                }
             }
         }
         return result;

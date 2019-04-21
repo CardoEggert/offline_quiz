@@ -48,4 +48,15 @@ public class AnswerMapper {
         }
         return quizAnswers;
     }
+
+    public static List<QuizAnswer> fromDbAnswerToQuizAnswer(List<Answer> answers) {
+        List<QuizAnswer> quizAnswers = new ArrayList<>(answers.size());
+        for (Answer answer : answers) {
+            QuizAnswer qa = new QuizAnswer();
+            qa.setAnswer(answer.getId());
+            qa.setAnswered(false);
+            quizAnswers.add(qa);
+        }
+        return quizAnswers;
+    }
 }

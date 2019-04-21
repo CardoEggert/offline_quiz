@@ -1,5 +1,6 @@
 package ee.project.offline.quiz.mapper;
 
+import ee.project.offline.quiz.domain.Answer;
 import ee.project.offline.quiz.domain.Question;
 import ee.project.offline.quiz.domain.dto.quiz.AnswerDTO;
 import ee.project.offline.quiz.domain.dto.quiz.QuestionDTO;
@@ -7,8 +8,7 @@ import ee.project.offline.quiz.domain.dto.add.AddAnswerDTO;
 import ee.project.offline.quiz.domain.dto.add.AddQuestionDTO;
 import ee.project.offline.quiz.domain.dto.results.QuestionResultWrapper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class QuestionMapper {
 
@@ -61,5 +61,17 @@ public class QuestionMapper {
             qrWrappers.add(qrWrapper);
         }
         return qrWrappers;
+    }
+
+    public static List<QuestionResultWrapper> fromQuizQuestionsToQuestionResultWrapper(Set<Question> questions, Map<Long, List<Answer>> mapQuestionToAnswer) {
+        List<QuestionResultWrapper> questionResultWrappers = new ArrayList<>(questions.size());
+        for (Question question : questions) {
+            QuestionResultWrapper qrw = new QuestionResultWrapper();
+            qrw.setMultipleChoice(question.getMultipleChoice());
+            qrw.setQuestion(question.getId());
+            qrw.setAnswers(AnswerMapper.fromDbAnswerToQuizAnswer(mapQuestionToAnswer.get(question.getId())));
+            questionResultWrappers.add(qrw);
+        }
+        return questionResultWrappers;
     }
 }
