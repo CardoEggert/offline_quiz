@@ -1,7 +1,5 @@
 package ee.project.offline.quiz.domain.dto.add;
 
-import ee.project.offline.quiz.domain.dto.AnswerDTO;
-
 import java.util.List;
 
 public class AddQuestionDTO {

@@ -3,7 +3,7 @@ package ee.project.offline.quiz.service;
 import java.util.Random;
 
 import ee.project.offline.quiz.service.storage.FileSystemStorageService;
-import ee.project.offline.quiz.service.storage.StorageException;
+import ee.project.offline.quiz.service.storage.exceptions.StorageException;
 import ee.project.offline.quiz.service.storage.StorageProperties;
 import org.junit.Before;
 import org.junit.Test;

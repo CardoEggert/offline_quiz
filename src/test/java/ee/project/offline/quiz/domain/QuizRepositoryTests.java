@@ -41,7 +41,7 @@ public class QuizRepositoryTests {
     @Transactional
     @Test
     public void createQuizWithUser() {
-        List<Answer> questionsWithAnswers = TestUtils.generateQuestionsWithAnswers(10);
+        List<Answer> questionsWithAnswers = TestUtils.generateQuestionsWithAnswers(10, 5L);
         List<Question> extractedQuestions = extractQuestions(questionsWithAnswers);
         Quiz generateQuiz = new Quiz(new HashSet<>(extractedQuestions));
         generateQuiz.setUserName("Eesnimi Perekonnanimi");

@@ -23,7 +23,7 @@
         <div class="col-sm-4 row-align-flex">
 <<<<<<< Updated upstream
             <div class="col-sm-4"><img ng-src="{{emblem}}" class="half-height-float-left"></div>
-            <div class="col-sm-4"><h2>TEST</h2></div>
+            <div class="col-sm-4"><h2 class="text-to-middle">TEST</h2></div>
             <div class="col-sm-4"><img ng-src="{{emblem}}" class="half-height-float-right"></div>
 =======
             <div class="col-sm-4"></div>
@@ -35,18 +35,18 @@
     <br> <br>
     <!-- User Input Form -->
     <div class="col-sm-12 user-input-container" ng-show="!startQuiz && !quizInProgress" ng-init="acceptUserInfo = true">
-        <form class="md-form" name="beginForm" class="padding-top-15">
+        <form class="md-form padding-top-15 form-min-width" name="beginForm">
             <div class="col-sm-12 form-group">
                 <h3>Sisestada andmed</h3>
             </div>
             <div class="col-sm-12 form-group">
                 <label for="userName">Ees- ja perekonnanimi:</label>
-                <input id="userName" type="text" ng-minlength="5" ng-required="true" ng-pattern="/^[a-z ,.'-]+$/i" ng-model="name" ng-disabled="!acceptUserInfo"/>
+                <input id="userName" class="form-control" type="text" ng-minlength="5" ng-required="true" ng-pattern="/^[a-z ,.'-]+$/i" ng-model="name" ng-disabled="!acceptUserInfo"/>
                 <span class="red-color" ng-show="acceptUserInfo && beginForm.name.$dirty && beginForm.name.$invalid">Nimi peab olema vähemalt 5 tähemärki!</span>
             </div>
             <div class="col-sm-12 form-group">
                 <label for="userEmail">E-mail:</label>
-                <input id="userEmail" type="text" ng-minlength="5" ng-required="true" ng-pattern="/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/" ng-model="email" ng-disabled="!acceptUserInfo"/>
+                <input id="userEmail" class="form-control" type="text" ng-minlength="5" ng-required="true" ng-pattern="/^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/" ng-model="email" ng-disabled="!acceptUserInfo"/>
                 <span class="red-color" ng-show="acceptUserInfo && beginForm.email.$dirty && beginForm.email.$invalid">Nimi peab olema vähemalt 5 tähemärki!</span>
             </div>
             <div class="col-sm-12 form-check">
@@ -55,10 +55,41 @@
             </div>
             <div class="col-sm-12">
                 <button ng-disabled="!testStartable()" id="quizButton" type="button" class="btn btn-primary btn-lg btn-block" ng-click="startQuizApp(name, email)">Alusta testi</button>
+                <div class="padding-top-15" ng-show="!startQuiz && !quizInProgress && statisticsToShow()" ng-init="loadStatistics()">
+                    <div class="accordion" id="statisticsAccordion">
+                        <div class="card">
+                            <div class="card-header" id="statisticsHeader">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">Näita tulemusi
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="collapseOne" class="collapse" aria-labelledby="statisticsHeader" data-parent="#statisticsAccordion">
+                                <div class="card-body accordion-body-fill">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Nimi</th>
+                                                <th scope="col">Tulemus</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="statistic in statistics.statisticItems">
+                                                <th scope="row">{{$index + 1}}</th>
+                                                <th>{{statistic.name}}</th>
+                                                <th>{{statistic.percentageResult * 100 | number:2 }}%</th>
+                                            </tr>
+                                        </tbody>
+                                    </table>      
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
-    
     <div ng-show="quizInProgress && quiz == null" class="center-text">
         Laen testi...
     </div>
@@ -93,7 +124,7 @@
         <!-- display question -->
         <div class="row padding-from-top-25">
             <div class="col-sm-4 align-center"><a type="button" class="btn btn-light" ng-click="setSelected(selected - 1)"><<</a></div>
-            <div class="col-sm-4 align-items-center">
+            <div class="col-sm-4 align-items-center" ng-style="{height: hgt+ 'px'}">
                 <h3> Küsimus {{selected+1}}</h3>
                 <div ng-show="selectedQuestion.picturePath != ''">
                     <img class="image-center" data-ng-src="{{selectedQuestionPicture}}">
@@ -114,20 +145,16 @@
                         <label class="form-check-label" for="answer{{answer.id}}" ng-class ="{ 'succeeded-answer' : quizFinished && isRadioAnswerAnsweredCorrectly(selectedQuestion, quizResults, answer), 'failed-answer' : quizFinished && !isRadioAnswerAnsweredCorrectly(selectedQuestion, quizResults, answer)}">{{answer.description}}</label>
                     </div>
                 </div>
-                
+                <div ng-show="questionsAnswered(quiz) == 10" class="row">
+                    <div ng-show="quizInProgress" class="col-sm-12">
+                        <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="submitTest()">Esita</button>
+                    </div>
+                    <div ng-show="quizFinished" class="col-sm-12">
+                        <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="closeTest()">Lõpeta ülevaatus</button>
+                    </div>
+                </div>  
             </div>
-            <div class="col-sm-4 align-center"><a type="button" class="btn btn-light float-right" ng-click="setSelected(selected +1)">>></a></div>
-        </div>
-        <div ng-show="questionsAnswered(quiz) == 10" class="row">
-            <div class="col-sm-4"></div>
-            <div ng-show="quizInProgress" class="col-sm-4">
-                <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="submitTest()">Esita</button>
-            </div>
-            
-            <div ng-show="quizFinished" class="col-sm-4">
-                <button type="button" class="btn btn-primary btn-lg btn-block" ng-click="closeTest()">Lõpeta ülevaatus</button>
-            </div>
-            <div class="col-sm-4"></div>
+            <div class="col-sm-4 align-center align-middle"><a type="button" class="btn btn-light float-right" ng-click="setSelected(selected +1)">>></a></div>
         </div>
     </div>
     

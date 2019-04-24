@@ -1,6 +1,6 @@
 var app = angular.module('QuizApp', []);
 
-app.controller('quizController', ['$scope', '$http', function($scope, $http) {
+app.controller('quizController', ['$scope', '$http', '$window', '$interval', function($scope, $http, $window, $interval) {
     $scope.startQuiz = false;
     $scope.quizInProgress = false;
     $scope.name = '';
@@ -184,12 +184,11 @@ app.controller('quizController', ['$scope', '$http', function($scope, $http) {
         $scope.quizFinished = false;
         $scope.quizResults = undefined;
         $scope.quiz = undefined;
+        $scope.loadStatistics();
     };
     
-<<<<<<< Updated upstream
-=======
+
     $scope.hgt = $window.innerHeight / 2;
-    $scope.screenWidthQuarter = $window.innerWidth / 4;
     
     
     $scope.loadStatistics = function() {
@@ -214,7 +213,5 @@ app.controller('quizController', ['$scope', '$http', function($scope, $http) {
             $scope.loadStatistics();
         }
     }, 60000);
-    
->>>>>>> Stashed changes
     
 }]);

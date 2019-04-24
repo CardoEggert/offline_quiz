@@ -1,7 +1,7 @@
 package ee.project.offline.quiz.web;
 
 import ee.project.offline.quiz.domain.Quiz;
-import ee.project.offline.quiz.domain.dto.QuizDTO;
+import ee.project.offline.quiz.domain.dto.quiz.QuizDTO;
 import ee.project.offline.quiz.service.QuizService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

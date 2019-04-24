@@ -12,6 +12,7 @@
     <script src="scripts/questionHandler.js"></script>
     
     <link rel="stylesheet" type="text/css" href="style/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="style/questions.css">
     
 </head>
 <body style="display: flex; justify-content: center; align-items:center" >
@@ -50,9 +51,13 @@
                 </div>
             </div>
         </div>
-        <div>
-            <a id="addAnswerButton" type="button" class="btn btn-light" ng-click="addAnswer()">Add Answer</a>
-            <a id="submitButton" ng-disabled="questionSubmittable()" type="button" class="btn btn-light" ng-click="sendQuestion()">Submit</a>
+        <div class="row">
+            <div class="col-sm-6 no-padding-right">
+                <a id="addAnswerButton" type="button" class="btn btn-light btn-lg btn-block" ng-click="addAnswer()">Add Answer</a>
+            </div>
+            <div class="col-sm-6 no-padding-left">
+                <a id="submitButton" ng-disabled="questionSubmittable()" type="button" class="btn btn-light btn-lg btn-block" ng-click="sendQuestion()">Submit</a>
+            </div>
         </div>
     </form>
 

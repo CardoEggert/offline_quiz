@@ -3,9 +3,9 @@ package ee.project.offline.quiz.service;
 import ee.project.offline.quiz.domain.Answer;
 import ee.project.offline.quiz.domain.Question;
 import ee.project.offline.quiz.domain.Quiz;
-import ee.project.offline.quiz.domain.dto.AnswerDTO;
-import ee.project.offline.quiz.domain.dto.QuestionDTO;
-import ee.project.offline.quiz.domain.dto.QuizDTO;
+import ee.project.offline.quiz.domain.dto.quiz.AnswerDTO;
+import ee.project.offline.quiz.domain.dto.quiz.QuestionDTO;
+import ee.project.offline.quiz.domain.dto.quiz.QuizDTO;
 import ee.project.offline.quiz.domain.dto.add.AddAnswerDTO;
 import ee.project.offline.quiz.domain.dto.add.AddQuestionDTO;
 import ee.project.offline.quiz.domain.dto.results.QuestionResultWrapper;
@@ -13,6 +13,7 @@ import ee.project.offline.quiz.domain.dto.results.QuizAnswer;
 import ee.project.offline.quiz.domain.dto.results.QuizResults;
 import ee.project.offline.quiz.domain.log.UserAnswerLog;
 import ee.project.offline.quiz.domain.log.UserQuestionLog;
+import ee.project.offline.quiz.domain.statistics.StatisticsList;
 import ee.project.offline.quiz.mapper.AnswerMapper;
 import ee.project.offline.quiz.mapper.QuestionMapper;
 import ee.project.offline.quiz.mapper.QuizMapper;
@@ -21,6 +22,8 @@ import ee.project.offline.quiz.repository.QuestionRepository;
 import ee.project.offline.quiz.repository.QuizRepository;
 import ee.project.offline.quiz.repository.log.UserAnswerLogRepository;
 import ee.project.offline.quiz.repository.log.UserQuestionLogRepository;
+import ee.project.offline.quiz.service.exceptions.InvalidQuestionException;
+import ee.project.offline.quiz.service.exceptions.NotEnoughQuestionsException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -68,11 +71,11 @@ public class QuizService {
 
     private Long calculateMaxPoints(Quiz quizWithQuestions) {
         if (!CollectionUtils.isEmpty(quizWithQuestions.getQuestions())) {
-            Long maxPoints = 0L;
+            long maxPoints = 0L;
             for (Question question : quizWithQuestions.getQuestions()) {
                 List<Answer> answersFromDb = answerRepository.findAllByQuestionId(question.getId());
                 for (Answer answer : answersFromDb) {
-                    maxPoints += answer.getPoints();
+                    maxPoints += Math.max(0L, answer.getPoints());
                 }
             }
             return maxPoints;
@@ -182,7 +185,7 @@ public class QuizService {
             result += addPointsAccordingToCheckedAnswers(checkedAnswers, answerMap);
         }
         checkedResult.setQuestions(checkedQuestions);
-        return result;
+        return Math.max(0L, result);
     }
 
     private QuizAnswer getCorrectAnswer(List<QuizAnswer> answers, Map<Long, Answer> answerMap) {
@@ -196,9 +199,12 @@ public class QuizService {
     private long addPointsAccordingToCheckedAnswers(List<QuizAnswer> checkedAnswers, Map<Long, Answer> answerMap) {
         long result = 0L;
         for(QuizAnswer checkedAnswer : checkedAnswers) {
-            if (checkedAnswer.getAnswered()) {
-                Answer dbAnswer = getAnswerFromDb(answerMap, checkedAnswer.getAnswer());
-                if (dbAnswer != null) {
+            Answer dbAnswer = getAnswerFromDb(answerMap, checkedAnswer.getAnswer());
+            if (dbAnswer != null) {
+                if (checkedAnswer.getAnswered()) {
+                    result += Math.max(0, dbAnswer.getPoints());
+                }
+                if (!checkedAnswer.getAnswered() && dbAnswer.getPoints() < 0L) {
                     result += dbAnswer.getPoints();
                 }
             }

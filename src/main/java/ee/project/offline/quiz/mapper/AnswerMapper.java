@@ -3,7 +3,7 @@ package ee.project.offline.quiz.mapper;
 import ee.project.offline.quiz.domain.Answer;
 import ee.project.offline.quiz.domain.Question;
 import ee.project.offline.quiz.domain.dto.add.AddAnswerDTO;
-import ee.project.offline.quiz.domain.dto.AnswerDTO;
+import ee.project.offline.quiz.domain.dto.quiz.AnswerDTO;
 import ee.project.offline.quiz.domain.dto.results.QuizAnswer;
 
 import java.util.ArrayList;
@@ -44,6 +44,17 @@ public class AnswerMapper {
             QuizAnswer qa = new QuizAnswer();
             qa.setAnswer(answer.getId());
             qa.setAnswered(answer.getAnswered());
+            quizAnswers.add(qa);
+        }
+        return quizAnswers;
+    }
+
+    public static List<QuizAnswer> fromDbAnswerToQuizAnswer(List<Answer> answers) {
+        List<QuizAnswer> quizAnswers = new ArrayList<>(answers.size());
+        for (Answer answer : answers) {
+            QuizAnswer qa = new QuizAnswer();
+            qa.setAnswer(answer.getId());
+            qa.setAnswered(false);
             quizAnswers.add(qa);
         }
         return quizAnswers;

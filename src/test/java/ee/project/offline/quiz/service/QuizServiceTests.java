@@ -3,21 +3,20 @@ package ee.project.offline.quiz.service;
 import ee.project.offline.quiz.domain.Answer;
 import ee.project.offline.quiz.domain.Question;
 import ee.project.offline.quiz.domain.Quiz;
-import ee.project.offline.quiz.domain.dto.AnswerDTO;
-import ee.project.offline.quiz.domain.dto.QuestionDTO;
-import ee.project.offline.quiz.domain.dto.QuizDTO;
+import ee.project.offline.quiz.domain.dto.quiz.QuizDTO;
 import ee.project.offline.quiz.domain.dto.add.AddAnswerDTO;
 import ee.project.offline.quiz.domain.dto.add.AddQuestionDTO;
 import ee.project.offline.quiz.domain.dto.results.QuestionResultWrapper;
 import ee.project.offline.quiz.domain.dto.results.QuizAnswer;
 import ee.project.offline.quiz.domain.dto.results.QuizResults;
-import ee.project.offline.quiz.domain.log.UserAnswerLog;
 import ee.project.offline.quiz.mapper.QuizMapper;
 import ee.project.offline.quiz.repository.AnswerRepository;
 import ee.project.offline.quiz.repository.QuestionRepository;
 import ee.project.offline.quiz.repository.QuizRepository;
 import ee.project.offline.quiz.repository.log.UserAnswerLogRepository;
 import ee.project.offline.quiz.repository.log.UserQuestionLogRepository;
+import ee.project.offline.quiz.service.exceptions.InvalidQuestionException;
+import ee.project.offline.quiz.service.exceptions.NotEnoughQuestionsException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +27,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.annotation.Repeat;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.transaction.Transactional;
@@ -80,21 +80,24 @@ public class QuizServiceTests {
         testEntityManager.clear();
     }
 
+
+    @Sql(scripts = {"/scripts/clear_db.sql", "/scripts/full_test_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void generateNewQuiz() {
-        generateAndSaveQuestionsWithAnswers(100, testEntityManager);
         Quiz quiz = quizService.getNewQuiz();
         assertThat(quiz.getQuestions().size()).isEqualTo(10);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test(expected = NotEnoughQuestionsException.class)
     public void getNewQuizWhenNotEnoughQuestions() {
         Quiz notEnoughQuestionsQuiz = quizService.getNewQuiz();
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void addQuestionsToDatabase() {
-        List<AddQuestionDTO> userQuestions = generateUserQuestions(20);
+        List<AddQuestionDTO> userQuestions = generateUserQuestions(20, 5L);
 
         List<Question> extractedQuestions = extractQuestionsFromUserQuestions(userQuestions);
         List<Answer> extractedAnswers = extractAnswersFromUserQuestions(userQuestions);
@@ -109,7 +112,7 @@ public class QuizServiceTests {
 
     @Test(expected = InvalidQuestionException.class)
     public void addMultipleChoiceQuestionWithNoRightAnswersToDatabase() {
-        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion();
+        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion(5L);
         userQuestions.setMultipleChoice(true);
         setAllAnswersToFalse(userQuestions.getAnswers());
 
@@ -131,6 +134,7 @@ public class QuizServiceTests {
     }
 
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void validateResultsIfAllMultipleQuestions() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -142,6 +146,7 @@ public class QuizServiceTests {
         assertThat(validatedResults.getPoints()).isEqualTo(200L);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void validateResultsIfAllSingleAnswerQuestions() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -154,6 +159,7 @@ public class QuizServiceTests {
         assertThat(validatedResults.getPoints()).isEqualTo(0L);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void checkLogs() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -177,6 +183,7 @@ public class QuizServiceTests {
         }
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void validateResultsIfHalfSingleAndHalfMultipleAnswerQuestions() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -190,6 +197,7 @@ public class QuizServiceTests {
         assertThat(validatedResults.getPoints()).isEqualTo(100L);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void validateResultsForSingleAnswerQuestionsWithOneTrueValue() {
         QuizResults generatedQuizResults = createQuizResults();
@@ -232,14 +240,14 @@ public class QuizServiceTests {
     }
 
     private QuizResults createQuizResults() {
-        generateAndSaveQuestionsWithAnswers(20, testEntityManager);
+        generateAndSaveQuestionsWithAnswers(20, testEntityManager, 5L);
         Quiz newQuiz = quizService.getNewQuiz();
         return QuizMapper.fromDtoToQuizResult(quizService.convertQuiz(newQuiz));
     }
 
     @Test(expected = InvalidQuestionException.class)
     public void addSingleChoiceQuestionWithNoRightAnswersToDatabase() {
-        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion();
+        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion(5L);
         userQuestions.setMultipleChoice(false);
         setAllAnswersToFalse(userQuestions.getAnswers());
 
@@ -248,7 +256,7 @@ public class QuizServiceTests {
 
     @Test(expected = InvalidQuestionException.class)
     public void addQuestionWithNoAnswer() {
-        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion();
+        AddQuestionDTO userQuestions = TestUtils.generateSingleUserQuestion(5L);
         userQuestions.setMultipleChoice(false);
         userQuestions.setAnswers(new ArrayList<>());
 
@@ -257,15 +265,16 @@ public class QuizServiceTests {
 
     @Test
     public void addAnswersToQuestion() {
-        generateAndSaveQuestionsWithAnswers(100, testEntityManager);
+        generateAndSaveQuestionsWithAnswers(100, testEntityManager, 5L);
         Quiz quiz = quizService.getNewQuiz();
         QuizDTO quizDTO = quizService.convertQuiz(quiz);
         assertThat(quizDTO.getQuestions().size() > 0).isEqualTo(true);
     }
 
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void calculateMaxPoints() {
-        generateAndSaveQuestionsWithAnswers(100, testEntityManager);
+        generateAndSaveQuestionsWithAnswers(100, testEntityManager, 5L);
         Quiz quiz = quizService.getNewQuiz();
         List<Long> questionIds = quiz.getQuestions().stream().map(Question::getId).collect(Collectors.toList());
         long pointSum = 0;
@@ -278,10 +287,26 @@ public class QuizServiceTests {
         assertThat(pointSum).isEqualTo(quiz.getMaxPoints());
     }
 
-    @Repeat(value = 10)
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Test
+    public void calculateMaxPointsWithNegativePoints() {
+        generateAndSaveQuestionsWithAnswers(100, testEntityManager, -2L);
+        Quiz quiz = quizService.getNewQuiz();
+        assertThat(quiz.getMaxPoints()).isEqualTo(0L);
+    }
+
+    @Sql(scripts = {"/scripts/clear_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Test
+    public void calculateMaxPointsWithPositiveAndNegativePoints() {
+        generateAndSaveQuestionsWithAnswers(5, testEntityManager, -2L);
+        generateAndSaveQuestionsWithAnswers(5, testEntityManager, 2L);
+        Quiz quiz = quizService.getNewQuiz();
+        assertThat(quiz.getMaxPoints()).isEqualTo(40L);
+    }
+
+    @Sql(scripts = {"/scripts/clear_db.sql", "/scripts/full_test_db.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Test
     public void quizQuestionContainNoDuplicates() {
-        generateAndSaveQuestionsWithAnswers(15, testEntityManager);
         Quiz quiz = quizService.getNewQuiz();
         assertNoDuplicates(quiz.getQuestions());
     }

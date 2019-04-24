@@ -119,3 +119,18 @@ ul {
     display: flex;
     justify-content: center;
 }
+
+.text-to-middle {
+    justify-content: center;
+    display: flex;
+}
+
+html,body { height:100%; }
+
+.accordion-body-fill {
+    max-height: 200px;
+    overflow-x: auto;
+}
+.form-min-width {
+    min-width: 350px;
+}
