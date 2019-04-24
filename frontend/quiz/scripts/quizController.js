@@ -5,7 +5,6 @@ app.controller('quizController', ['$scope', '$http', function($scope, $http) {
     $scope.quizInProgress = false;
     $scope.name = '';
     $scope.email = '';
-    $scope.emblem = 'http://localhost:8080/files/KyVJ_embleem.jpg';
     $scope.quizFinished = false;
     
     $scope.quiz = null;
@@ -187,5 +186,35 @@ app.controller('quizController', ['$scope', '$http', function($scope, $http) {
         $scope.quiz = undefined;
     };
     
+<<<<<<< Updated upstream
+=======
+    $scope.hgt = $window.innerHeight / 2;
+    $scope.screenWidthQuarter = $window.innerWidth / 4;
+    
+    
+    $scope.loadStatistics = function() {
+        $http.get("http://localhost:8080/statistics").then(function(response) {
+                $scope.statistics = response.data;
+                console.log("success");
+            }, function(error) {
+                console.log(error);
+                console.log("failed");
+            });
+    }
+    
+    $scope.statisticsToShow = function () {
+        if ($scope.statistics && $scope.statistics.statisticItems.length > 0) {
+            return true;
+        }
+        return false;
+    }
+    
+    $interval(function() {
+        if (!$scope.startQuiz && !$scope.quizInProgress) {
+            $scope.loadStatistics();
+        }
+    }, 60000);
+    
+>>>>>>> Stashed changes
     
 }]);

@@ -8,7 +8,8 @@ public class StorageProperties {
     /**
      * Folder location for storing files
      */
-    private String location = "C:\\Users\\EVERYDAY\\IdeaProjects\\offline quiz\\src\\main\\resources\\uploads\\";
+    // TODO: Change this to picture location storage
+    private String location = "";
 
     public String getLocation() {
         return location;

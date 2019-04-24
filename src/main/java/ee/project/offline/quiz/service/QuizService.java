@@ -49,19 +49,19 @@ public class QuizService {
         this.userAnswerLogRepository = userAnswerLogRepository;
     }
 
-
-    public Quiz getNewQuizWithUserInfo(String name, String email) {
-        Quiz generateQuiz = getNewQuiz();
-        generateQuiz.setUser(name, email);
-        return generateQuiz;
+    public Quiz getNewQuiz() {
+        return getNewQuiz(null, null);
     }
 
-    public Quiz getNewQuiz() {
+    public Quiz getNewQuiz(String name, String email) {
         List<Question> questionsForQuiz = questionRepository.findAll();
         if (questionsForQuiz == null || questionsForQuiz.size() < 10) {
             throw new NotEnoughQuestionsException();
         }
         Quiz quizWithQuestions = new Quiz(new HashSet<>(randomlyPickQuestions(questionsForQuiz)));
+        if (name != null && email != null) {
+            quizWithQuestions.setUser(name, email);
+        }
         quizWithQuestions.setMaxPoints(calculateMaxPoints(quizWithQuestions));
         return quizRepository.save(quizWithQuestions);
     }

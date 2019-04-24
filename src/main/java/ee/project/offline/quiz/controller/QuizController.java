@@ -24,7 +24,7 @@ public class QuizController {
     @GetMapping("/quiz/new/{user}/{email}")
     @CrossOrigin
     public QuizDTO getNewQuizWithUserInfo(@PathVariable String user, @PathVariable String email) throws Exception{
-        Quiz generatedQuiz = this.quizService.getNewQuizWithUserInfo(user, email);
+        Quiz generatedQuiz = this.quizService.getNewQuiz(user, email);
         if (generatedQuiz == null) {
             throw new NotEnoughQuestionsException();
         }

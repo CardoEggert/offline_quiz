@@ -32,8 +32,8 @@ public class QuizControllerTests {
 
     @Test
     public void getNewQuizWithUserInfo() throws Exception{
-        when(this.quizService.getNewQuizWithUserInfo("eesnimi perekonnanimi", "eesnimi.perekonnanimi@gmail.com")).thenReturn(new Quiz());
-        when(this.quizService.convertQuiz(this.quizService.getNewQuizWithUserInfo("eesnimi perekonnanimi", "eesnimi.perekonnanimi@gmail.com"))).thenReturn(new QuizDTO());
+        when(this.quizService.getNewQuiz("eesnimi perekonnanimi", "eesnimi.perekonnanimi@gmail.com")).thenReturn(new Quiz());
+        when(this.quizService.convertQuiz(this.quizService.getNewQuiz("eesnimi perekonnanimi", "eesnimi.perekonnanimi@gmail.com"))).thenReturn(new QuizDTO());
         this.mockMvc.perform(get("/quiz/new/{user}/{email}", "eesnimi perekonnanimi", "eesnimi.perekonnanimi@gmail.com"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("questions").exists());
